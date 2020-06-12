@@ -1,74 +1,86 @@
 import React, { Component } from 'react';
-import { Media } from 'reactstrap';
+import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap';
 
 class Menu extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dishes: [
-                {
-                  id: 0,
-                  name:'Uthappizza',
-                  image: 'assets/images/uthappizza.png',
-                  category: 'mains',
-                  label:'Hot',
-                  price:'4.99',
-                  description:'A unique combination of Indian Uthappam (pancake) and Italian pizza, topped with Cerignola olives, ripe vine cherry tomatoes, Vidalia onion, Guntur chillies and Buffalo Paneer.'                        },
-               {
-                  id: 1,
-                  name:'Zucchipakoda',
-                  image: 'assets/images/zucchipakoda.png',
-                  category: 'appetizer',
-                  label:'',
-                  price:'1.99',
-                  description:'Deep fried Zucchini coated with mildly spiced Chickpea flour batter accompanied with a sweet-tangy tamarind sauce'                        },
-               {
-                  id: 2,
-                  name:'Vadonut',
-                  image: 'assets/images/vadonut.png',
-                  category: 'appetizer',
-                  label:'New',
-                  price:'1.99',
-                  description:'A quintessential ConFusion experience, is it a vada or is it a donut?'                        },
-               {
-                  id: 3,
-                  name:'ElaiCheese Cake',
-                  image: 'assets/images/elaicheesecake.png',
-                  category: 'dessert',
-                  label:'',
-                  price:'2.99',
-                  description:'A delectable, semi-sweet New York Style Cheese Cake, with Graham cracker crust and spiced with Indian cardamoms'                        }
-               ],
-        };
-    }
+  /**
+   * Constructor
+   * @param props properties
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      // this component's state is supplied by the
+      // ancestor component (App in this case) via props
+      selectedDish: null
+    };
+  }
 
-    render() {
-        const menu = this.state.dishes.map((dish) => {
-            return (
-              <div key={dish.id} className="col-12 mt-5">
-                <Media tag="li">
-                  <Media left middle>
-                      <Media object src={dish.image} alt={dish.name} />
-                  </Media>
-                  <Media body className="ml-5">
-                    <Media heading>{dish.name}</Media>
-                    <p>{dish.description}</p>
-                  </Media>
-                </Media>
-              </div>
-            );
-        });
+  /**
+   * Update the selected dish
+   * @param dish the selected dish
+   */
+  onDishSelect(dish) {
+    // this is how we update the state of our component
+    // by calling the setState method
+    this.setState({selectedDish: dish});
+  }
 
-        return (
-          <div className="container">
-            <div className="row">
-              <Media list>
-                  {menu}
-              </Media>
-            </div>
-          </div>
-        );
+  /**
+   * A method to render a dish details
+   * @param dish the dish to render
+   */
+  renderDish(dish) {
+    if (dish != null) {
+      return (
+        <Card>
+          <CardImg width="100%" src={dish.image} alt={dish.name}/>
+          <CardBody>
+            <CardTitle>{dish.name}</CardTitle>
+            <CardText>{dish.description}</CardText>
+          </CardBody>
+        </Card>
+      );
+    } else {
+      return (
+        <div></div>
+      );
     }
+  }
+
+  /**
+   * Every React component
+   * must implement the render() method
+   */
+  render() {
+    // no more need for using this component state as the
+    // dishes variable is handed over from the ancestor through props
+    const menu = this.props.dishes.map((dish) => {
+      return (
+        <div key={dish.id} className="col-12 col-md-5 m-1">
+          {/* change the way the menu items are displayed from Media to Card */}
+          <Card onClick={() => this.onDishSelect(dish)}>
+            <CardImg width="100%" src={dish.image} alt={dish.name}/>
+            <CardImgOverlay>
+              <CardTitle>{dish.name}</CardTitle>
+              {/*<p>{dish.description}</p>*/}
+            </CardImgOverlay>
+          </Card>
+        </div>
+      );
+    });
+
+    return (
+      <div className="container">
+        <div className="row">
+          {menu}
+        </div>
+        {/* display a selected dish details */}
+        <div className="row">
+          {this.renderDish(this.state.selectedDish)}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default Menu;
