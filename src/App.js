@@ -20,11 +20,6 @@ class App extends Component {
         </BrowserRouter>
       </Provider>
       
-      <BrowserRouter>
-      <div className="App">
-        <Main />
-      </div>
-    </BrowserRouter>
     );
   }
 }
