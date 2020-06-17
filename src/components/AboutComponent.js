@@ -1,33 +1,13 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
-function RenderLeader({leader}) {
-    return (
-        <div key={leader.id} className="col-12 mt-5">
-            <Media tag="li">
-                <Media left middle>
-                    <Media object src={leader.image} alt={leader.name} />
-                </Media>
-                <Media body className="ml-5">
-                    <Media heading>{leader.name}</Media>
-                    <p>{leader.designation}</p>
-                    <p>{leader.description}</p>
-                </Media>
-            </Media>
-        </div>
-    );
-}
 
 function About(props) {
 
-    const leaders = props.leaders.map((leader) => {
-        return (
-            <RenderLeader leader={leader} />
-        );
-    });
-
-    return(
+    return (
         <div className="container">
             <div className="row">
                 <Breadcrumb>
@@ -37,7 +17,7 @@ function About(props) {
                 <div className="col-12">
                     <h3>About Us</h3>
                     <hr />
-                </div>                
+                </div>
             </div>
             <div className="row row-content">
                 <div className="col-12 col-md-6">
@@ -82,13 +62,44 @@ function About(props) {
                     <h2>Corporate Leadership</h2>
                 </div>
                 <div className="col-12">
-                    <Media list>
-                        {leaders}
-                    </Media>
+                    
+                        <Media list>
+                            <Stagger in>
+                            {props.leaders.leaders.map((leader) => {
+                                return (
+                                    <Fade in>
+                                        <RenderLeader leader={leader}></RenderLeader>
+                                    </Fade>
+                                )
+                            })
+                            }
+                            </Stagger>
+                        </Media>
+                    
                 </div>
             </div>
         </div>
     );
 }
 
-export default About;  
+const RenderLeader = ({ leader }) => {
+    return (
+        <React.Fragment>
+            <Media className="mt-3" tag="li">
+                <Media left middle>
+                    <Media object src={baseUrl + leader.image} alt={leader.name} />
+                </Media>
+                <Media body className="ml-5">
+                    <Media heading>{leader.name}</Media>
+                    <Media><b>{leader.designation}</b></Media>
+                    <p className="mt-3">{leader.description}</p>
+                </Media>
+            </Media>
+        </React.Fragment>
+    )
+}
+
+
+
+
+export default About;    

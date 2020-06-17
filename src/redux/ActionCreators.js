@@ -1,7 +1,6 @@
 import * as ActionTypes from './ActionTypes';
-import { DISHES } from '../shared/dishes';
+// import { DISHES } from '../shared/dishes';
 import { baseUrl } from '../shared/baseUrl';
-
 
 export const addComment = (comment) => ({
     type: ActionTypes.ADD_COMMENT,
@@ -40,18 +39,14 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
       })
     .then(response => response.json())
     .then(response => dispatch(addComment(response)))
-    .catch(error =>  { console.log('post comments', error.message);
-    alert('Your comment could not be posted\nError: '+error.message); 
-    });
+    .catch(error =>  { console.log('post comments', error.message); alert('Your comment could not be posted\nError: '+error.message); });
 };
-
 
 export const fetchDishes = () => (dispatch) => {
 
     dispatch(dishesLoading(true));
 
     return fetch(baseUrl + 'dishes')
-    //receive ressonse from the server and andle it
     .then(response => {
         if (response.ok) {
           return response;
@@ -61,7 +56,7 @@ export const fetchDishes = () => (dispatch) => {
           throw error;
         }
       },
-      error => {
+      error => { //When API Sever is down
             var errmess = new Error(error.message);
             throw errmess;
       })
@@ -82,9 +77,8 @@ export const dishesFailed = (errmess) => ({
 export const addDishes = (dishes) => ({
     type: ActionTypes.ADD_DISHES,
     payload: dishes
-}); 
+});
 
-//error handling for comments
 export const fetchComments = () => (dispatch) => {    
     return fetch(baseUrl + 'comments')
     .then(response => {
@@ -138,7 +132,6 @@ export const fetchPromos = () => (dispatch) => {
     .catch(error => dispatch(promosFailed(error.message)));
 }
 
-
 export const promosLoading = () => ({
     type: ActionTypes.PROMOS_LOADING
 });
@@ -152,3 +145,78 @@ export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos
 });
+
+export const fetchLeaders = () => (dispatch) => {
+    
+    dispatch(leadersLoading());
+
+    return fetch(baseUrl + 'leaders')
+    .then(response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+            var errmess = new Error(error.message);
+            throw errmess;
+      })
+    .then(response => response.json())
+    .then(leaders => dispatch(addLeaders(leaders)))
+    .catch(error => dispatch(leadersFailed(error.message)));
+}
+
+export const leadersLoading = () => ({
+    type: ActionTypes.LEADERS_LOADING
+});
+
+export const leadersFailed = (errmess) => ({
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmess
+});
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
+});
+
+
+export const postFeedback = (values) => (dispatch) => {
+
+    const newFeedback = {
+        firstname: values.firstname,
+        lastname: values.lastname,
+        telnum: values.telnum,
+        email: values.email,
+        agree: values.agree,
+        contactType: values.contactType,
+        message: values.message
+    };
+    
+    return fetch(baseUrl + 'feedback', {
+        method: "POST",
+        body: JSON.stringify(newFeedback),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "same-origin"
+    })
+    .then(response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+            throw error;
+      })
+    .then(response => response.json())
+    .then(response => {console.log(response); alert('Feedback stored in server: ' + JSON.stringify(response));})
+    .catch(error =>  { console.log('post Feedback', error.message); alert('Your Feedback could not be posted\nError: '+error.message); });
+};
